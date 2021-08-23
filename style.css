@@ -1,7 +1,7 @@
 .grid {
   display: flex;
   flex-wrap: wrap;
-  border: solid 1px;
+  border: solid black 5px;
   width: 300px;
   height: 300px;
 }
@@ -13,11 +13,10 @@
 
 .shooter {
   background-color: blue;
-
 }
 
 .invader {
-  background-color: purple;
+  background-color: black;
   border-radius: 10px;
 }
 
@@ -27,4 +26,5 @@
 
 .laser {
   background-color: green;
+ 
 }
