@@ -1,14 +1,14 @@
 const grid = document.querySelector(".grid");
 const resultsDisplay = document.querySelector(".results");
-let currentShooterIndex = 202;
-let width = 15;
+let currentShooterIndex = 670;
+let width = 45; 
 let direction = 1;
 let invadersId;
 let goingRight = true;
 let sithsRemoved = [];
 let results = 0;
 
-for (let i = 0; i < 225; i++) {
+for (let i = 0; i < 675; i++) {
   const square = document.createElement("div");
   grid.appendChild(square);
 }
@@ -80,18 +80,18 @@ function moveInvaders() {
   draw();
 
   if (squares[currentShooterIndex].classList.contains("invader", "shooter")) {
-    resultsDisplay.innerHTML = "GAME OVER";
+    resultsDisplay.innerHTML = "GAME OVER!";
     clearInterval(invadersId);
   }
 
   for (let i = 0; i < sithInvaders.length; i++) {
     if (sithInvaders[i] > squares.length) {
-      resultsDisplay.innerHTML = "GAME OVER";
+      resultsDisplay.innerHTML = "GAME OVER!";
       clearInterval(invadersId);
     }
   }
   if (sithsRemoved.length === sithInvaders.length) {
-    resultsDisplay.innerHTML = "YOU WIN";
+    resultsDisplay.innerHTML = "YOU WIN!";
     clearInterval(invadersId);
   }
 }

@@ -1,9 +1,12 @@
+
+
 .grid {
   display: flex;
   flex-wrap: wrap;
   border: solid black 5px;
-  width: 300px;
-  height: 300px;
+  margin: auto;
+  width: 900px;
+  height: 700px;
 }
 
 .grid div {
@@ -26,5 +29,4 @@
 
 .laser {
   background-color: green;
- 
 }
