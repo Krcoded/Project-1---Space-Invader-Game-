@@ -1,131 +1,284 @@
-const grid = document.querySelector(".grid");
-const resultsDisplay = document.querySelector(".results");
-let currentShooterIndex = 670;
-let width = 45; 
-let direction = 1;
-let invadersId;
-let goingRight = true;
-let sithsRemoved = [];
-let results = 0;
+const KEY_CODE_LEFT = 37;
+const KEY_CODE_RIGHT = 39;
+const KEY_CODE_SPACE = 32;
 
-for (let i = 0; i < 675; i++) {
-  const square = document.createElement("div");
-  grid.appendChild(square);
+const GAME_WIDTH = 800;
+const GAME_HEIGHT = 600;
+
+const PLAYER_WIDTH = 20;
+const PLAYER_MAX_SPEED = 600.0;
+const LASER_MAX_SPEED = 200.0;
+const LASER_COOLDOWN = 0.5;
+
+const ENEMIES_PER_ROW = 10;
+const ENEMY_HORIZONTAL_PADDING = 80;
+const ENEMY_VERTICAL_PADDING = 70;
+const ENEMY_VERTICAL_SPACING = 80;
+const ENEMY_COOLDOWN = 5.0;
+
+const GAME_STATE = {
+  lastTime: Date.now(),
+  leftPressed: false,
+  rightPressed: false,
+  spacePressed: false,
+  playerX: 0,
+  playerY: 0,
+  playerCooldown: 0,
+  lasers: [],
+  enemies: [],
+  enemyLasers: [],
+  gameOver: false,
+};
+
+function rectsIntersect(r1, r2) {
+  return !(
+    r2.left > r1.right ||
+    r2.right < r1.left ||
+    r2.top > r1.bottom ||
+    r2.bottom < r1.top
+  );
 }
 
-const squares = Array.from(document.querySelectorAll(".grid div"));
+function setPosition(el, x, y) {
+  el.style.transform = `translate(${x}px, ${y}px)`;
+}
 
-const sithInvaders = [
-  0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 30, 31,
-  32, 33, 34, 35, 36, 37, 38, 39,
-];
+function clamp(v, min, max) {
+  if (v < min) {
+    return min;
+  } else if (v > max) {
+    return max;
+  } else {
+    return v;
+  }
+}
 
-function draw() {
-  for (let i = 0; i < sithInvaders.length; i++) {
-    if (!sithsRemoved.includes(i)) {
-      squares[sithInvaders[i]].classList.add("invader");
+function rand(min, max) {
+  if (min === undefined) min = 0;
+  if (max === undefined) max = 1;
+  return min + Math.random() * (max - min);
+}
+
+function createPlayer($container) {
+  GAME_STATE.playerX = GAME_WIDTH / 2;
+  GAME_STATE.playerY = GAME_HEIGHT - 50;
+  const $player = document.createElement("img");
+  $player.src = "./img.png/resistancepilot.jpeg";
+  $player.className = "player";
+  $container.appendChild($player);
+  setPosition($player, GAME_STATE.playerX, GAME_STATE.playerY);
+}
+
+function destroyPlayer($container, player) {
+  $container.removeChild(player);
+  GAME_STATE.gameOver = true;
+  const audio = new Audio(" ");
+  audio.play();
+}
+
+function updatePlayer(dt, $container) {
+  if (GAME_STATE.leftPressed) {
+    GAME_STATE.playerX -= dt * PLAYER_MAX_SPEED;
+  }
+  if (GAME_STATE.rightPressed) {
+    GAME_STATE.playerX += dt * PLAYER_MAX_SPEED;
+  }
+
+  GAME_STATE.playerX = clamp(
+    GAME_STATE.playerX,
+    PLAYER_WIDTH,
+    GAME_WIDTH - PLAYER_WIDTH
+  );
+
+  if (GAME_STATE.spacePressed && GAME_STATE.playerCooldown <= 0) {
+    createLaser($container, GAME_STATE.playerX, GAME_STATE.playerY);
+    GAME_STATE.playerCooldown = LASER_COOLDOWN;
+  }
+  if (GAME_STATE.playerCooldown > 0) {
+    GAME_STATE.playerCooldown -= dt;
+  }
+
+  const player = document.querySelector(".player");
+  setPosition(player, GAME_STATE.playerX, GAME_STATE.playerY);
+}
+
+function createLaser($container, x, y) {
+  const $element = document.createElement("img");
+  $element.src = "./img.png/laserGreen13.png";
+  $element.className = "laser";
+  $container.appendChild($element);
+  const laser = { x, y, $element };
+  GAME_STATE.lasers.push(laser);
+  const audio = new Audio("sound/sfx-laser1.ogg");
+  audio.play();
+  setPosition($element, x, y);
+}
+
+function updateLasers(dt, $container) {
+  const lasers = GAME_STATE.lasers;
+  for (let i = 0; i < lasers.length; i++) {
+    const laser = lasers[i];
+    laser.y -= dt * LASER_MAX_SPEED;
+    if (laser.y < 0) {
+      destroyLaser($container, laser);
+    }
+    setPosition(laser.$element, laser.x, laser.y);
+    const r1 = laser.$element.getBoundingClientRect();
+    const enemies = GAME_STATE.enemies;
+    for (let j = 0; j < enemies.length; j++) {
+      const enemy = enemies[j];
+      if (enemy.isDead) continue;
+      const r2 = enemy.$element.getBoundingClientRect();
+      if (rectsIntersect(r1, r2)) {
+        // Enemy was hit
+        destroyEnemy($container, enemy);
+        destroyLaser($container, laser);
+        break;
+      }
     }
   }
+  GAME_STATE.lasers = GAME_STATE.lasers.filter((e) => !e.isDead);
 }
 
-draw();
+function destroyLaser($container, laser) {
+  $container.removeChild(laser.$element);
+  laser.isDead = true;
+}
 
-function remove() {
-  for (let i = 0; i < sithInvaders.length; i++) {
-    squares[sithInvaders[i]].classList.remove("invader");
+function createEnemy($container, x, y) {
+  const $element = document.createElement("img");
+  $element.src = "./img.png/sithpilot.jpeg";
+  $element.className = "enemy";
+  $container.appendChild($element);
+  const enemy = {
+    x,
+    y,
+    cooldown: rand(0.5, ENEMY_COOLDOWN),
+    $element,
+  };
+  GAME_STATE.enemies.push(enemy);
+  setPosition($element, x, y);
+}
+
+function updateEnemies(dt, $container) {
+  const dx = Math.sin(GAME_STATE.lastTime / 1000.0) * 50;
+  const dy = Math.cos(GAME_STATE.lastTime / 1000.0) * 10;
+
+  const enemies = GAME_STATE.enemies;
+  for (let i = 0; i < enemies.length; i++) {
+    const enemy = enemies[i];
+    const x = enemy.x + dx;
+    const y = enemy.y + dy;
+    setPosition(enemy.$element, x, y);
+    enemy.cooldown -= dt;
+    if (enemy.cooldown <= 0) {
+      createEnemyLaser($container, x, y);
+      enemy.cooldown = ENEMY_COOLDOWN;
+    }
   }
+  GAME_STATE.enemies = GAME_STATE.enemies.filter((e) => !e.isDead);
 }
 
-squares[currentShooterIndex].classList.add("shooter");
+function destroyEnemy($container, enemy) {
+  $container.removeChild(enemy.$element);
+  enemy.isDead = true;
+}
 
-function moveShooter(e) {
-  squares[currentShooterIndex].classList.remove("shooter");
-  switch (e.key) {
-    case "ArrowLeft":
-      if (currentShooterIndex % width !== 0) currentShooterIndex -= 1;
+function createEnemyLaser($container, x, y) {
+  const $element = document.createElement("img");
+  $element.src = "./img.png/laserRed01.png";
+  $element.className = "enemy-laser";
+  $container.appendChild($element);
+  const laser = { x, y, $element };
+  GAME_STATE.enemyLasers.push(laser);
+  setPosition($element, x, y);
+}
+
+function updateEnemyLasers(dt, $container) {
+  const lasers = GAME_STATE.enemyLasers;
+  for (let i = 0; i < lasers.length; i++) {
+    const laser = lasers[i];
+    laser.y += dt * LASER_MAX_SPEED;
+    if (laser.y > GAME_HEIGHT) {
+      destroyLaser($container, laser);
+    }
+    setPosition(laser.$element, laser.x, laser.y);
+    const r1 = laser.$element.getBoundingClientRect();
+    const player = document.querySelector(".player");
+    const r2 = player.getBoundingClientRect();
+    if (rectsIntersect(r1, r2)) {
+      // Player was hit
+      destroyPlayer($container, player);
       break;
-    case "ArrowRight":
-      if (currentShooterIndex % width < width - 1) currentShooterIndex += 1;
-      break;
+    }
   }
-  squares[currentShooterIndex].classList.add("shooter");
+  GAME_STATE.enemyLasers = GAME_STATE.enemyLasers.filter((e) => !e.isDead);
 }
-document.addEventListener("keydown", moveShooter);
 
-function moveInvaders() {
-  const leftEdge = sithInvaders[0] % width === 0;
-  const rightEdge = sithInvaders[sithInvaders.length - 1] % width === width - 1;
-  remove();
+function init() {
+  const $container = document.querySelector(".game");
+  createPlayer($container);
 
-  if (rightEdge && goingRight) {
-    for (let i = 0; i < sithInvaders.length; i++) {
-      sithInvaders[i] += width + 1;
-      direction = -1;
-      goingRight = false;
+  const enemySpacing =
+    (GAME_WIDTH - ENEMY_HORIZONTAL_PADDING * 2) / (ENEMIES_PER_ROW - 1);
+  for (let j = 0; j < 3; j++) {
+    const y = ENEMY_VERTICAL_PADDING + j * ENEMY_VERTICAL_SPACING;
+    for (let i = 0; i < ENEMIES_PER_ROW; i++) {
+      const x = i * enemySpacing + ENEMY_HORIZONTAL_PADDING;
+      createEnemy($container, x, y);
     }
-  }
-
-  if (leftEdge && !goingRight) {
-    for (let i = 0; i < sithInvaders.length; i++) {
-      sithInvaders[i] += width - 1;
-      direction = 1;
-      goingRight = true;
-    }
-  }
-
-  for (let i = 0; i < sithInvaders.length; i++) {
-    sithInvaders[i] += direction;
-  }
-
-  draw();
-
-  if (squares[currentShooterIndex].classList.contains("invader", "shooter")) {
-    resultsDisplay.innerHTML = "GAME OVER!";
-    clearInterval(invadersId);
-  }
-
-  for (let i = 0; i < sithInvaders.length; i++) {
-    if (sithInvaders[i] > squares.length) {
-      resultsDisplay.innerHTML = "GAME OVER!";
-      clearInterval(invadersId);
-    }
-  }
-  if (sithsRemoved.length === sithInvaders.length) {
-    resultsDisplay.innerHTML = "YOU WIN!";
-    clearInterval(invadersId);
-  }
-}
-invadersId = setInterval(moveInvaders, 600);
-
-function shoot(e) {
-  let laserId;
-  let currentLaserIndex = currentShooterIndex;
-  function moveLaser() {
-    squares[currentLaserIndex].classList.remove("laser");
-    currentLaserIndex -= width;
-    squares[currentLaserIndex].classList.add("laser");
-
-    if (squares[currentLaserIndex].classList.contains("invader")) {
-      squares[currentLaserIndex].classList.remove("laser");
-      squares[currentLaserIndex].classList.remove("invader");
-      squares[currentLaserIndex].classList.add("boom");
-
-      setTimeout(
-        () => squares[currentLaserIndex].classList.remove("boom"),
-        300
-      );
-      clearInterval(laserId);
-
-      const sithRemoved = sithInvaders.indexOf(currentLaserIndex);
-      sithsRemoved.push(sithRemoved);
-      results++;
-      resultsDisplay.innerHTML = results;
-    }
-  }
-  switch (e.key) {
-    case " ":
-      laserId = setInterval(moveLaser, 100);
   }
 }
 
-document.addEventListener("keydown", shoot);
+function playerHasWon() {
+  return GAME_STATE.enemies.length === 0;
+}
+
+function update(e) {
+  const currentTime = Date.now();
+  const dt = (currentTime - GAME_STATE.lastTime) / 1000.0;
+
+  if (GAME_STATE.gameOver) {
+    document.querySelector(".game-over").style.display = "block";
+    return;
+  }
+
+  if (playerHasWon()) {
+    document.querySelector(".congratulations").style.display = "block";
+    return;
+  }
+
+  const $container = document.querySelector(".game");
+  updatePlayer(dt, $container);
+  updateLasers(dt, $container);
+  updateEnemies(dt, $container);
+  updateEnemyLasers(dt, $container);
+
+  GAME_STATE.lastTime = currentTime;
+  window.requestAnimationFrame(update);
+}
+
+function onKeyDown(e) {
+  if (e.keyCode === KEY_CODE_LEFT) {
+    GAME_STATE.leftPressed = true;
+  } else if (e.keyCode === KEY_CODE_RIGHT) {
+    GAME_STATE.rightPressed = true;
+  } else if (e.keyCode === KEY_CODE_SPACE) {
+    GAME_STATE.spacePressed = true;
+  }
+}
+
+function onKeyUp(e) {
+  if (e.keyCode === KEY_CODE_LEFT) {
+    GAME_STATE.leftPressed = false;
+  } else if (e.keyCode === KEY_CODE_RIGHT) {
+    GAME_STATE.rightPressed = false;
+  } else if (e.keyCode === KEY_CODE_SPACE) {
+    GAME_STATE.spacePressed = false;
+  }
+}
+
+init();
+window.addEventListener("keydown", onKeyDown);
+window.addEventListener("keyup", onKeyUp);
+window.requestAnimationFrame(update);

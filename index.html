@@ -1,16 +1,33 @@
-<!doctype html>
-
+<!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="utf-8">
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Star Wars Invaders</title>
-  <link rel="stylesheet" href="style.css">
-
+  <link rel="stylesheet" href="./style.css">
 </head>
+
 <body>
-  <h1 class="results">Sith Destroyed 0</h1>
-  <div class="grid"></div>
+  <div class="wrap">
+    <header>Star Wars Invaders</header>
+    <div class="game-wrapper">
+      <div class="game"></div>
+      <div class="congratulations">
+        <h1>Congratulations!</h1>
+        <h2>The Force is with you!</h2>
+        <button class="btn" onclick="window.location.reload()">Restart</button>
+      </div>
+      <div class="game-over">
+        <h1>GAME OVER!</h1>
+        <h2>The Sith have Won!</h2>
+        <button class="btn" onclick="window.location.reload()">Restart</button>
+      </div>
+    </div>
+    <footer>Controls: Spacebar, Left Arrow, Right Arrow.</footer>
+  </div>
   <script src="./main.js"></script>
 </body>
+
 </html>
+2021 Kevin Rodriguez
