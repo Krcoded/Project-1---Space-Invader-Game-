@@ -114,18 +114,15 @@ footer {
   padding: 10px 40px;
   font: 14px sans-serif;
 }
-@keyframes pop-in {
-  0% {
-    opacity: 0;
-    transform: translate(0, -100px);
-  }
-  10% {
-    opacity: 1;
-  }
-  50% {
-    transform: translate(0, 30px);
-  }
-  100% {
-    transform: translate(0, 0);
-  }
+
+
+
+audio {
+  position: absolute;
+  width: 260px;
+  height: 50px;
+  margin: -100px; 
+  margin-left: -560px;
+  margin-top: 600px;
+  opacity: 50%;
 }
