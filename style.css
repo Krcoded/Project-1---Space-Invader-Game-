@@ -17,9 +17,9 @@ body {
 
 header {
   text-align: center;
-  background: black;
-  color: #fff;
-  padding: 10px;
+  background:black;
+  color: whitesmoke;
+  padding: 5px;
 }
 
 footer {
@@ -31,19 +31,21 @@ footer {
 }
 
 .game-wrapper {
-  flex: 1;
   display: flex;
   justify-content: center;
-  align-items: center;
-  background: #222;
+  padding-top: 5%;
+  background: url(./img.png/Themebackground1.jpg);
+  width: auto;
+  height: 100vh;
 }
+
 .game {
   width: 800px;
   height: 600px;
-  background: url(./img.png/background-black.png);
-  animation: scroll-background 5s linear infinite;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  background: url(./img.png/bluestarsbackground.jpeg);
+  animation: scroll-background 6s linear infinite;
   position: relative;
+  opacity: 92%;
 }
 
 @keyframes scroll-background {
@@ -65,6 +67,7 @@ footer {
 .game .player {
   position: absolute;
   margin-left: -20px;
+  margin-top: -20px;
   width: 40px;
 }
 
@@ -82,39 +85,32 @@ footer {
 
 .congratulations {
   display: none;
+  margin-top: 10%;
   position: absolute;
-  background: hsl(130, 93%, 42%);
-  color: white;
-  padding: 20px 50px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  background: hsl(130, 91%, 25%);
+  color: whitesmoke;
+  padding: 15px 50px;
   border-radius: 10px;
   text-align: center;
-  animation: pop-in 1s;
+  animation: pop-in 3s;
 }
 
 .game-over {
   display: none;
+  margin-top: 10%;
   position: absolute;
   background: #6b1818;
-  color: white;
-  padding: 20px 50px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  color: whitesmoke;
+  padding: 15px 50px;
   border-radius: 10px;
   text-align: center;
-  animation: pop-in 1s;
+  animation: pop-in 3s;
 }
 
 .btn {
-  border: 2px solid #eeebeb;
-  border-radius: 3px;
-  box-shadow: 0 px rgba(0, 0, 0, 0.15);
-  background: linear-gradient(
-    to bottom,
-    #fff 0%,
-    #fff 49%,
-    #f5f5f5 50%,
-    #eee 100%
-  );
+  border: 2px solid;
+  border-radius: 2px;
+  background: whitesmoke;
   padding: 10px 40px;
   font: 14px sans-serif;
 }
