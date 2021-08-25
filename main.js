@@ -1,3 +1,13 @@
+const splash = document.querySelector(".splash");
+
+document.addEventListener("DOMContentLoaded", (e) => {
+  setTimeout(() => {
+    splash.classList.add("display-none");
+  }, 1000);
+});
+
+
+
 const KEY_CODE_LEFT = 37;
 const KEY_CODE_RIGHT = 39;
 const KEY_CODE_SPACE = 32;
@@ -5,17 +15,16 @@ const KEY_CODE_SPACE = 32;
 const GAME_WIDTH = 800;
 const GAME_HEIGHT = 600;
 
-const PLAYER_WIDTH = 20;
+const PLAYER_WIDTH = 50;
 const PLAYER_MAX_SPEED = 600.0;
 const LASER_MAX_SPEED = 800.0;
 const LASER_COOLDOWN = 0.1;
 
-const ENEMIES_PER_ROW = 10;
-const ENEMY_HORIZONTAL_PADDING = 80;
+const ENEMIES_PER_ROW = 8;
+const ENEMY_HORIZONTAL_PADDING = 100;
 const ENEMY_VERTICAL_PADDING = 70;
 const ENEMY_VERTICAL_SPACING = 80;
 const ENEMY_COOLDOWN = 5.0;
-
 
 const GAME_STATE = {
   lastTime: Date.now(),
@@ -39,6 +48,8 @@ function rectsIntersect(r1, r2) {
     r2.bottom < r1.top
   );
 }
+
+
 
 function setPosition(el, x, y) {
   el.style.transform = `translate(${x}px, ${y}px)`;
@@ -105,7 +116,7 @@ function updatePlayer(dt, $container) {
 
 function createLaser($container, x, y) {
   const $element = document.createElement("img");
-  $element.src = "./img.png/laserGreen01.png";
+  $element.src = "./img.png/laser-green-3.png";
   $element.className = "laser";
   $container.appendChild($element);
   const laser = { x, y, $element };
@@ -189,12 +200,14 @@ function destroyEnemy($container, enemy) {
 
 function createEnemyLaser($container, x, y) {
   const $element = document.createElement("img");
-  $element.src = "./img.png/laserRed01.png";
+  $element.src = "./img.png/laser-red-13.png";
   $element.className = "enemy-laser";
   $container.appendChild($element);
   const laser = { x, y, $element };
   GAME_STATE.enemyLasers.push(laser);
   setPosition($element, x, y);
+  const audio = new Audio("./audio.wav/shoot.wav");
+  audio.play();
 }
 
 function updateEnemyLasers(dt, $container) {
@@ -244,14 +257,14 @@ function update(e) {
   if (GAME_STATE.gameOver) {
     document.querySelector(".game-over").style.display = "block";
     const audio = new Audio("./audio.wav/swvader01.wav");
-  audio.play();
-    return; 
+    audio.play();
+    return;
   }
 
   if (playerHasWon()) {
     document.querySelector(".congratulations").style.display = "block";
     const audio = new Audio("./audio.wav/force.wav");
-  audio.play();
+    audio.play();
     return;
   }
 
