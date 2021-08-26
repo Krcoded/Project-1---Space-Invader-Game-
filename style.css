@@ -72,8 +72,8 @@ footer {
 }
 
 .game {
-  width: 800px;
-  height: 600px;
+  width: 60%;
+  height: 80%;
   background: url(./img.png/bluestarsbackground.jpeg);
   animation: scroll-background 6s linear infinite;
   position: relative;
@@ -116,6 +116,7 @@ footer {
 }
 
 .congratulations {
+  display: none;
   margin-top: 10%;
   position: absolute;
   background: hsl(130, 91%, 25%);
@@ -127,6 +128,7 @@ footer {
 }
 
 .game-over {
+  display: none;
   margin-top: 10%;
   position: absolute;
   background: #6b1818;
