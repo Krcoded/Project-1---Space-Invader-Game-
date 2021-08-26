@@ -6,8 +6,6 @@ document.addEventListener("DOMContentLoaded", (e) => {
   }, 1000);
 });
 
-
-
 const KEY_CODE_LEFT = 37;
 const KEY_CODE_RIGHT = 39;
 const KEY_CODE_SPACE = 32;
@@ -48,8 +46,6 @@ function rectsIntersect(r1, r2) {
     r2.bottom < r1.top
   );
 }
-
-
 
 function setPosition(el, x, y) {
   el.style.transform = `translate(${x}px, ${y}px)`;
@@ -298,7 +294,15 @@ function onKeyUp(e) {
   }
 }
 
-init();
+setTimeout(() => {
+  let option = confirm("Ready?");
+  if (option) {
+    init();
+    update();
+  }
+}, 1000);
+
+// init();
 window.addEventListener("keydown", onKeyDown);
 window.addEventListener("keyup", onKeyUp);
-window.requestAnimationFrame(update);
+// window.requestAnimationFrame(update);
