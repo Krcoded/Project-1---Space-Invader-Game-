@@ -55,11 +55,13 @@ header {
 }
 
 footer {
-  padding: 10px;
+  position: fixed;
+  bottom: 0px;
+  width: 100%;
   text-align: center;
-  font-size: 11px;
   background: black;
-  color: white;
+  color: whitesmoke;
+  padding: 5px;
 }
 
 .game-wrapper {
@@ -72,12 +74,12 @@ footer {
 }
 
 .game {
-  width: 60%;
-  height: 80%;
+  width: 55%;
+  height: 75%;
   background: url(./img.png/bluestarsbackground.jpeg);
   animation: scroll-background 6s linear infinite;
   position: relative;
-  opacity: 92%;
+  opacity: 90%;
 }
 
 @keyframes scroll-background {
@@ -98,9 +100,9 @@ footer {
 
 .game .player {
   position: absolute;
-  margin-left: -20px;
-  margin-top: -30px;
-  width: 50px;
+  margin-left: -45px;
+  margin-top: -45px;
+  width: 60px;
 }
 
 .game .laser {
@@ -147,13 +149,7 @@ footer {
   font: 14px sans-serif;
 }
 
-/* 
 audio {
   position: absolute;
-  width: 260px;
-  height: 50px;
-  margin: -100px; 
-  margin-left: -560px;
-  margin-top: 600px;
   opacity: 50%;
-} */
+}
