@@ -12,16 +12,16 @@ const KEY_CODE_SPACE = 32;
 
 const GAME_WIDTH = 800;
 const GAME_HEIGHT = 600;
-const PLAYER_WIDTH = 50;
-const PLAYER_MAX_SPEED = 600.0;
-const LASER_MAX_SPEED = 800.0;
-const LASER_COOLDOWN = 0;
+const PLAYER_WIDTH = 55;
+const PLAYER_MAX_SPEED = 500.0;
+const LASER_MAX_SPEED = 600.0;
+const LASER_COOLDOWN = 0.2;
 
-const ENEMIES_PER_ROW = 10;
+const ENEMIES_PER_ROW = 8;
 const ENEMY_HORIZONTAL_PADDING = 100;
 const ENEMY_VERTICAL_PADDING = 70;
 const ENEMY_VERTICAL_SPACING = 80;
-const ENEMY_COOLDOWN = 6.0;
+const ENEMY_COOLDOWN = 10.0;
 
 const GAME_STATE = {
   lastTime: Date.now(),
@@ -265,7 +265,7 @@ function update(e) {
     return;
   }
 
-  if (results % 24 == 0 && results !== 0) {
+  if (results % 16 == 0 && results !== 0) {
     const $container = document.querySelector(".game");
     placeEnemies($container);
   }
