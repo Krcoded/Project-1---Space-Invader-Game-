@@ -85,7 +85,7 @@ footer {
   background: url(./img.png/bluestarsbackground.jpeg);
   animation: scroll-background 6s linear infinite;
   position: relative;
-  opacity: 75%;
+  opacity: 80%;
 }
 
 @keyframes scroll-background {
@@ -108,15 +108,15 @@ footer {
 
 .game .enemy {
   position: absolute;
-  margin-left: -20px;
-  margin-top: -40px;
+  margin-left: -4.5%;
+  margin-top: -7%;
   width: 50px;
 }
 
 .game .player {
   position: absolute;
-  margin-left: -45px;
-  margin-top: -55px;
+  margin-left: -6%;
+  margin-top: -8.5%;
   width: 60px;
 }
 
