@@ -1,10 +1,14 @@
+//Intro Screen
+
 const splash = document.querySelector(".splash");
 
 document.addEventListener("DOMContentLoaded", (e) => {
   setTimeout(() => {
     splash.classList.add("display-none");
-  }, 1000);
+  }, 2000);
 });
+
+// Game State Rules
 
 const KEY_CODE_LEFT = 37;
 const KEY_CODE_RIGHT = 39;
@@ -15,7 +19,7 @@ const GAME_HEIGHT = 600;
 const PLAYER_WIDTH = 55;
 const PLAYER_MAX_SPEED = 500.0;
 const LASER_MAX_SPEED = 600.0;
-const LASER_COOLDOWN = 0.2;
+const LASER_COOLDOWN = 0.15;
 
 const ENEMIES_PER_ROW = 8;
 const ENEMY_HORIZONTAL_PADDING = 100;
@@ -37,8 +41,12 @@ const GAME_STATE = {
   gameOver: false,
 };
 
+// Score Display
+
 const resultsDisplay = document.querySelector(".results");
 let results = 0;
+
+// Game Border Control
 
 function rectsIntersect(r1, r2) {
   return !(
@@ -48,6 +56,8 @@ function rectsIntersect(r1, r2) {
     r2.bottom < r1.top
   );
 }
+
+// Fixed Positions
 
 function setPosition(el, x, y) {
   el.style.transform = `translate(${x}px, ${y}px)`;
@@ -68,6 +78,8 @@ function rand(min, max) {
   if (max === undefined) max = 1;
   return min + Math.random() * (max - min);
 }
+
+//Player Sprite Controls
 
 function createPlayer($container) {
   GAME_STATE.playerX = GAME_WIDTH / 2;
@@ -112,9 +124,11 @@ function updatePlayer(dt, $container) {
   setPosition(player, GAME_STATE.playerX, GAME_STATE.playerY);
 }
 
+// Player Laser Controls
+
 function createLaser($container, x, y) {
   const $element = document.createElement("img");
-  $element.src = "./img.png/laser-green-3.png";
+  $element.src = "./img.png/laser-green-11.png";
   $element.className = "laser";
   $container.appendChild($element);
   const laser = { x, y, $element };
@@ -155,6 +169,8 @@ function destroyLaser($container, laser) {
   laser.isDead = true;
 }
 
+// Enemy Sprite Controls
+
 function createEnemy($container, x, y) {
   const $element = document.createElement("img");
   $element.src = "./img.png/EnemySith1.png";
@@ -189,6 +205,7 @@ function updateEnemies(dt, $container) {
   }
   GAME_STATE.enemies = GAME_STATE.enemies.filter((e) => !e.isDead);
 }
+
 function destroyEnemy($container, enemy) {
   $container.removeChild(enemy.$element);
   enemy.isDead = true;
@@ -198,9 +215,23 @@ function destroyEnemy($container, enemy) {
   audio.play();
 }
 
+function placeEnemies($container) {
+  const enemySpacing =
+    (GAME_WIDTH - ENEMY_HORIZONTAL_PADDING * 2) / (ENEMIES_PER_ROW - 1);
+  for (let j = 0; j < 3; j++) {
+    const y = ENEMY_VERTICAL_PADDING + j * ENEMY_VERTICAL_SPACING;
+    for (let i = 0; i < ENEMIES_PER_ROW; i++) {
+      const x = i * enemySpacing + ENEMY_HORIZONTAL_PADDING;
+      createEnemy($container, x, y);
+    }
+  }
+}
+
+//Enemy laser Controls
+
 function createEnemyLaser($container, x, y) {
   const $element = document.createElement("img");
-  $element.src = "./img.png/laser-red-13.png";
+  $element.src = "./img.png/laser-red-7.png";
   $element.className = "enemy-laser";
   $container.appendChild($element);
   const laser = { x, y, $element };
@@ -232,17 +263,7 @@ function updateEnemyLasers(dt, $container) {
   GAME_STATE.enemyLasers = GAME_STATE.enemyLasers.filter((e) => !e.isDead);
 }
 
-function placeEnemies($container) {
-  const enemySpacing =
-    (GAME_WIDTH - ENEMY_HORIZONTAL_PADDING * 2) / (ENEMIES_PER_ROW - 1);
-  for (let j = 0; j < 3; j++) {
-    const y = ENEMY_VERTICAL_PADDING + j * ENEMY_VERTICAL_SPACING;
-    for (let i = 0; i < ENEMIES_PER_ROW; i++) {
-      const x = i * enemySpacing + ENEMY_HORIZONTAL_PADDING;
-      createEnemy($container, x, y);
-    }
-  }
-}
+//Game Start
 
 function init() {
   const $container = document.querySelector(".game");
@@ -250,9 +271,7 @@ function init() {
   placeEnemies($container);
 }
 
-function playerHasWon() {
-  return GAME_STATE.enemies.length === 0;
-}
+//Game Over
 
 function update(e) {
   const currentTime = Date.now();
@@ -260,16 +279,19 @@ function update(e) {
 
   if (GAME_STATE.gameOver) {
     document.querySelector(".game-over").style.display = "block";
-    const audio = new Audio("./audio.wav/swvader01.wav");
+    const audio = new Audio("./audio.wav/star-wars-theme-song.mp3");
     audio.play();
     return;
   }
 
-  if (results % 16 == 0 && results !== 0) {
+  //Enemy Respawn
+
+  if (results % 18 == 0 && results !== 0) {
     const $container = document.querySelector(".game");
     placeEnemies($container);
   }
 
+  //Game Update
   const $container = document.querySelector(".game");
   updatePlayer(dt, $container);
   updateLasers(dt, $container);
@@ -279,6 +301,8 @@ function update(e) {
   GAME_STATE.lastTime = currentTime;
   window.requestAnimationFrame(update);
 }
+
+// Key Controls
 
 function onKeyDown(e) {
   if (e.keyCode === KEY_CODE_LEFT) {
@@ -300,13 +324,17 @@ function onKeyUp(e) {
   }
 }
 
+//Game Ready Button
+
 setTimeout(() => {
   let option = confirm("Ready?");
   if (option) {
     init();
     update();
   }
-}, 2000);
+}, 2500);
+
+//Keyboard registered responses
 
 window.addEventListener("keydown", onKeyDown);
 window.addEventListener("keyup", onKeyUp);
