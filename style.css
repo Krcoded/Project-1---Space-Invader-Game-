@@ -79,7 +79,7 @@ footer {
   background: url(./img.png/bluestarsbackground.jpeg);
   animation: scroll-background 6s linear infinite;
   position: relative;
-  opacity: 90%;
+  opacity: 80%;
 }
 
 @keyframes scroll-background {
@@ -151,5 +151,8 @@ footer {
 
 audio {
   position: absolute;
-  opacity: 50%;
+  margin: 1%;
+  opacity: 20%;
+  width: 15%;
+  height: 5%;
 }
